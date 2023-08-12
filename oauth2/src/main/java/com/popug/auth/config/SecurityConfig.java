@@ -1,6 +1,6 @@
 package com.popug.auth.config;
 
-import com.popug.auth.jwt.JwtAuthenticationFilter;
+import com.popug.auth.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtAuthenticationFilter jwtAuthFilter; // will be automatiqually injected by spring; uses constructor-based dependency injection
+    private final JwtFilter jwtAuthFilter; // will be automatiqually injected by spring; uses constructor-based dependency injection
 
     private final AuthenticationProvider authenticationProvider;
 
@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/auth/**")
+                .requestMatchers("/api/v1/auth/**")
                 .permitAll()  //Permit all the List of Authorized URL in request Matchers (whiteListing)
                 .anyRequest()
                 .authenticated()  // all other request I want em to be authenticated
