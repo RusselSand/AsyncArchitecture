@@ -1,10 +1,17 @@
 package com.popug.auth.config;
 
+import com.popug.auth.messages.UserMessage;
 import com.popug.auth.repo.UserRepo;
 import com.popug.auth.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.config.KafkaListenerContainerFactory;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -38,5 +45,17 @@ public class ApplicationConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public ConsumerFactory<Integer, UserMessage> consumerFactory(KafkaProperties kafkaProperties) {
+        return new DefaultKafkaConsumerFactory<>(kafkaProperties.buildConsumerProperties());
+    }
+
+    @Bean
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<Integer, UserMessage>> kafkaListenerContainerFactory(KafkaProperties kafkaProperties) {
+        ConcurrentKafkaListenerContainerFactory<Integer, UserMessage> factory = new ConcurrentKafkaListenerContainerFactory<Integer, UserMessage>();
+        factory.setConsumerFactory(consumerFactory(kafkaProperties));
+        return factory;
     }
 }

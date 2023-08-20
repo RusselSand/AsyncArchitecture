@@ -151,7 +151,7 @@ services:
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
                        cub kafka-ready -b broker:29092 1 40 && \
                        echo Waiting for Confluent Schema Registry to be ready... && \
-                       cub sr-ready schema-registry 8081 40 && \
+                       cub sr-ready schema-registry 8181 40 && \
                        echo Waiting a few seconds for topic creation to finish... && \
                        sleep 11 && \
                        tail -f /dev/null'"
@@ -174,4 +174,4 @@ services:
       KAFKA_REST_HOST_NAME: rest-proxy
       KAFKA_REST_BOOTSTRAP_SERVERS: 'broker:29092'
       KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
-      KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
+      KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8181'
