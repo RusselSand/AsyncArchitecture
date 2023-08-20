@@ -6,6 +6,7 @@ import com.popug.auth.auth.ChangeRoleRequest;
 import com.popug.auth.auth.RegisterRequest;
 import com.popug.auth.jwt.JwtService;
 import com.popug.auth.kafka.UserProducer;
+import com.popug.auth.messages.UserMessage;
 import com.popug.auth.model.Role;
 import com.popug.auth.model.User;
 import com.popug.auth.model.UserMapper;
@@ -68,9 +69,16 @@ public class AuthService {
     }
     private void sendUserToKafka(User user) {
         try {
-            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-            String userJson = ow.writeValueAsString(userMapper.toDto(user));
-            userProducer.sendMessage(userJson);
+//            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+//            String userJson = ow.writeValueAsString(userMapper.toDto(user));
+            UserMessage msg = UserMessage.newBuilder()
+                    .setId(user.getId())
+                    .setPublicId(user.getPublicId())
+                    .setEmail(user.getEmail())
+                    .setName(user.getName())
+                    .setRole(user.getRole().toString())
+                    .build();
+            userProducer.sendMessage(msg);
         } catch (Exception ex){
             LOGGER.warn("Error in convert to json: "+ ex.getMessage());
         }
