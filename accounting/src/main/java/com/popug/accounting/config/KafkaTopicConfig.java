@@ -1,6 +1,9 @@
-package com.popug.task.config;
+package com.popug.accounting.config;
 
-import com.popug.task.messages.UserAddedMessage;
+import com.popug.accounting.messages.TaskAssignedMessage;
+import com.popug.accounting.messages.TaskCreatedMessage;
+import com.popug.accounting.messages.UserAddedMessage;
+import com.popug.accounting.model.Task;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -39,9 +42,32 @@ public class KafkaTopicConfig {
     }
 
     @Bean
+    public ConsumerFactory<String, TaskCreatedMessage> taskCreatedFactory(KafkaProperties kafkaProperties){
+        return new DefaultKafkaConsumerFactory<>(kafkaProperties.buildConsumerProperties());
+    }
+    @Bean
+    public ConsumerFactory<String, TaskAssignedMessage> taskAssignedFactory(KafkaProperties kafkaProperties){
+        return new DefaultKafkaConsumerFactory<>(kafkaProperties.buildConsumerProperties());
+    }
+    @Bean
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, UserAddedMessage>> kafkaListenerContainerFactory(KafkaProperties kafkaProperties) {
         ConcurrentKafkaListenerContainerFactory<String, UserAddedMessage> factory = new ConcurrentKafkaListenerContainerFactory<String, UserAddedMessage>();
         factory.setConsumerFactory(consumerFactory(kafkaProperties));
+        return factory;
+    }
+
+    @Bean
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, TaskCreatedMessage>>
+    taskCreatedListenerContainerFactory(KafkaProperties kafkaProperties) {
+        ConcurrentKafkaListenerContainerFactory<String, TaskCreatedMessage> factory = new ConcurrentKafkaListenerContainerFactory<String, TaskCreatedMessage>();
+        factory.setConsumerFactory(taskCreatedFactory(kafkaProperties));
+        return factory;
+    }
+    @Bean
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, TaskAssignedMessage>>
+    taskAssignedListenerContainerFactory(KafkaProperties kafkaProperties) {
+        ConcurrentKafkaListenerContainerFactory<String, TaskAssignedMessage> factory = new ConcurrentKafkaListenerContainerFactory<String, TaskAssignedMessage>();
+        factory.setConsumerFactory(taskAssignedFactory(kafkaProperties));
         return factory;
     }
 }

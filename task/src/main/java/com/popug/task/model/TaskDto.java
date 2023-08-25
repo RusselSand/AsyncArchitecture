@@ -15,6 +15,5 @@ public class TaskDto {
     private String description;
     private String user;
     private String userId;
-    private Integer price;
     private String publicId;
 }

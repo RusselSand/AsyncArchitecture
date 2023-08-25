@@ -1,0 +1,11 @@
+{
+   "namespace": "com.popug.auth.messages",
+   "type": "record",
+   "name": "UserAddedMessage",
+   "fields": [
+         {"name": "name", "type": "string"},
+         {"name": "publicId", "type": "string"},
+         {"name": "email", "type": "string"},
+         {"name": "role", "type": "string"}
+   ]
+}

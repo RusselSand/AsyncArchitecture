@@ -10,7 +10,6 @@ public class TaskMapper {
                 entity.getDescription(),
                 entity.getAssignee().getName(),
                 entity.getAssignee().getPublicId(),
-                entity.getPrice(),
                 entity.getPublicId());
     }
 }

@@ -1,9 +1,9 @@
-package com.popug.task.jwt;
+package com.popug.accounting.jwt;
 
 
-import com.popug.task.kafka.UserLifeCycleConsumer;
-import com.popug.task.model.User;
-import com.popug.task.service.UserService;
+import com.popug.accounting.kafka.UserLifeCycleConsumer;
+import com.popug.accounting.model.User;
+import com.popug.accounting.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

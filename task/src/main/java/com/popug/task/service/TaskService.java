@@ -2,7 +2,9 @@ package com.popug.task.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.popug.task.kafka.BillingProducer;
+import com.popug.task.kafka.TaskLifeCycleProducer;
+import com.popug.task.messages.TaskAssignedMessage;
+import com.popug.task.messages.TaskCreatedMessage;
 import com.popug.task.model.Task;
 import com.popug.task.model.TaskDto;
 import com.popug.task.model.TaskMapper;
@@ -25,7 +27,7 @@ public class TaskService {
     protected final TaskRepo taskRepo;
     protected final TaskMapper taskMapper;
     protected final UserService userService;
-    protected final BillingProducer billingProducer;
+    protected final TaskLifeCycleProducer taskLifeCycleProducer;
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskService.class);
 
     public TaskDto getTaskById(Integer id){
@@ -39,25 +41,46 @@ public class TaskService {
 
     public TaskDto addTask(CreateTaskRequest request){
         Random random = new Random();
-        int price = random.nextInt(20) + 20;
         var task = Task.builder()
                 .name(request.getName())
                 .description(request.getDescription())
-                .assignee(userService.getUser(request.getUserEmail()))
-                .price(price)
                 .publicId(UUID.randomUUID().toString())
                 .build();
         task = taskRepo.save(task);
+        sendTaskCreatedToKafka(task);
+        assignTask(request.getUserEmail(), task);
         return taskMapper.toDto(task);
     }
 
-    private void sendTaskToKafka(Task task){
+    private void assignTask(String userEmail, Task task){
+        User user = userService.getUser(userEmail);
+        task.setAssignee(user);
+        taskRepo.save(task);
+        sendTaskAssignedToKafka(task.getPublicId(), user.getPublicId());
+    }
+    private void sendTaskCreatedToKafka(Task task){
         try {
-            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-            String userJson = ow.writeValueAsString(taskMapper.toDto(task));
-            billingProducer.sendMessage(userJson);
+            TaskCreatedMessage msg = TaskCreatedMessage.newBuilder()
+                    .setTaskPublicId(task.getPublicId())
+                    .setTaskName(task.getName())
+                    .setTaskDescription(task.getDescription())
+                    .build();
+            taskLifeCycleProducer.sendTaskCreatedMessage(msg);
         } catch (Exception ex){
-            LOGGER.warn("Error in convert to json: "+ ex.getMessage());
+            LOGGER.warn("Error in convert to avro: "+ ex.getMessage());
+        }
+    }
+
+    private void sendTaskAssignedToKafka(String taskId, String userId){
+        try {
+
+            TaskAssignedMessage msg = TaskAssignedMessage.newBuilder()
+                    .setUserPublicId(userId)
+                    .setTaskPublicId(taskId)
+                    .build();
+            taskLifeCycleProducer.sendTaskAssignedMessage(msg);
+        } catch (Exception ex){
+            LOGGER.warn("Error in convert to avro: "+ ex.getMessage());
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.popug.task.model;
+package com.popug.accounting.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,15 +11,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "task")
-public class Task {
+@Table(name = "auth_user")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    private String description;
-    @ManyToOne
-    @JoinColumn
-    private User assignee;
+    private String email;
+    @Enumerated(EnumType.STRING)
+    private Role role;
     private String publicId;
 }

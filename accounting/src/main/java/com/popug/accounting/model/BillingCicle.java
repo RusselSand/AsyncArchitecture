@@ -1,4 +1,4 @@
-package com.popug.task.model;
+package com.popug.accounting.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,20 +6,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Date;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "task")
-public class Task {
+@Table(name = "billing_cycle")
+public class BillingCicle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String name;
-    private String description;
-    @ManyToOne
-    @JoinColumn
-    private User assignee;
-    private String publicId;
+    private Date startDate;
+    private CycleState state;
 }

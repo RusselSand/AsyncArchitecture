@@ -1,7 +1,7 @@
 package com.popug.task.jwt;
 
 
-import com.popug.task.kafka.UserConsumer;
+import com.popug.task.kafka.UserLifeCycleConsumer;
 import com.popug.task.model.Role;
 import com.popug.task.model.User;
 import com.popug.task.service.UserService;
@@ -23,7 +23,7 @@ import java.io.IOException;
 public class JwtAdminFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserService userService;
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserConsumer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserLifeCycleConsumer.class);
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,

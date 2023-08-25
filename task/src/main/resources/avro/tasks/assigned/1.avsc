@@ -1,0 +1,9 @@
+{
+   "namespace": "com.popug.task.messages",
+   "type": "record",
+   "name": "TaskAssignedMessage",
+   "fields": [
+        {"name": "userPublicId", "type":"string"},
+        {"name": "taskPublicId", "type": "string"}
+   ]
+}

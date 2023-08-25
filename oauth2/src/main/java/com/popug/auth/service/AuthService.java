@@ -5,8 +5,8 @@ import com.popug.auth.auth.AuthResponse;
 import com.popug.auth.auth.ChangeRoleRequest;
 import com.popug.auth.auth.RegisterRequest;
 import com.popug.auth.jwt.JwtService;
-import com.popug.auth.kafka.UserProducer;
-import com.popug.auth.messages.UserMessage;
+import com.popug.auth.kafka.UserLifeCycleProducer;
+import com.popug.auth.messages.UserAddedMessage;
 import com.popug.auth.model.Role;
 import com.popug.auth.model.User;
 import com.popug.auth.model.UserMapper;
@@ -18,8 +18,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 import java.util.UUID;
 
@@ -30,7 +28,7 @@ public class AuthService {
     private final PasswordEncoder encoder;
     private final JwtService jwtService;
     private final AuthenticationManager authManager;
-    private final UserProducer userProducer;
+    private final UserLifeCycleProducer userProducer;
     private final UserMapper userMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthService.class);
 
@@ -69,10 +67,7 @@ public class AuthService {
     }
     private void sendUserToKafka(User user) {
         try {
-//            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-//            String userJson = ow.writeValueAsString(userMapper.toDto(user));
-            UserMessage msg = UserMessage.newBuilder()
-                    .setId(user.getId())
+            UserAddedMessage msg = UserAddedMessage.newBuilder()
                     .setPublicId(user.getPublicId())
                     .setEmail(user.getEmail())
                     .setName(user.getName())
