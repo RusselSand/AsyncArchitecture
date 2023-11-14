@@ -1,0 +1,10 @@
+{
+   "namespace": "com.popug.accounting.messages",
+   "type": "record",
+   "name": "TaskCreatedMessage",
+   "fields": [
+        {"name": "taskPublicId", "type": "string"},
+        {"name": "taskName", "type": "string"},
+        {"name": "taskDescription", "type": "string"}
+   ]
+}
